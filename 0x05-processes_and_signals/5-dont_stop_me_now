@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#kills infinite print
+
+kill "$(ps -x | pgrep -f beyond)"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#pkill implementation - a script that kills a process
+
+pkill -f 7-highlander
