@@ -17,7 +17,6 @@ int infinite_while(void)
 	return (0);
 }
 
-
 /**
  *main - Creates five zombie processes.
  *Return: Always 0.
@@ -30,10 +29,14 @@ int main(void)
 	while (count < 5)
 	{
 		pid = fork();
-		if (pid > 0)
+		if (pid == -1)
+		{
+			perror("fork");
+			exit(EXIT_FAILURE);
+		}
+		else if (pid > 0)
 		{
 			printf("Zombie process created, PID:%d\n", pid);
-			sleep(1);
 			count++;
 		}
 		else
