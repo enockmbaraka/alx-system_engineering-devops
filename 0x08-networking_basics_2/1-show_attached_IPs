@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
+# script tp display all IPV4 IPS on a machine
 
-# This script displays all acive IPv4 addresses on the machine.
-
-active_ips=$(ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-echo "$active_ips"
+ifconfig -a | grep inet | cut -d: -f2 | cut -d" "  -f1
