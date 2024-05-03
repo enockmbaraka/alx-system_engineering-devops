@@ -1,5 +1,4 @@
-#!/usr/bin/pup
-#install flask
+#install flask using puppet
 
 package { 'flask':
   ensure   =>'2.1.0',
