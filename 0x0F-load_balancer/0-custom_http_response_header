@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Configure Nginx with custom HTTP response header and other settings
+# Configure web-02 to be identical to web-01
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on
 
 # Update package list and install Nginx
 sudo apt-get update
