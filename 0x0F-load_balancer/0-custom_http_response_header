@@ -8,7 +8,7 @@ sudo apt-get update
 sudo apt-get install -y nginx
 
 # Ensure the correct permissions for the web root directory
-sudo chown -R ubuntu:ubuntu /var/www/html
+sudo chown -R ubuntu /var/www/html
 
 # Create a custom index page
 echo "Hello World!" | sudo tee /var/www/html/index.html
@@ -26,9 +26,6 @@ error_page_config="\n\terror_page 404 /404.html;\n\tlocation = /404.html {\n\t\t
 
 # Insert custom configurations into the Nginx default site configuration
 sudo sed -i "/server_name _;/a \\t$custom_header$redirect_location$error_page_config" /etc/nginx/sites-available/default
-
-# Check Nginx configuration syntax
-sudo nginx -t
 
 # Restart and reload Nginx to apply the changes
 sudo service nginx restart
