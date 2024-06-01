@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
-# configure web-02 dentical to web-01
+# Configure web-02 identical to web-01
 # The name of the custom HTTP header must be X-Served-By
 # The value of the custom HTTP header must be the hostname of the server Nginx is running on
-#sudo sed -i 's/server_name _;.*/server_name _;\n\tadd_header X-Served-By \$hostname;/' /etc/nginx/sites-enabled/default
+
+# Update the package list and install Nginx
 sudo apt-get update
-sudo apt install nginx -y
+sudo apt-get -y install nginx
+
+# Ensure the correct permission
 sudo chown -R ubuntu /var/www/html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-replace="\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n"
-replace2="\n\\terror_page 404 /404.html;\n\tlocation = /var/www/html/404.html {\n\t\tinternal;\n\t}"
-replace3="\n\tadd_header X-Served-By \$hostname;"
-sudo sed -i "47i\ $replace3$replace$replace2" /etc/nginx/sites-available/default
+
+new_string="server_name _;\n\tlocation \/redirect_me{\n\t\treturn 301 https:\/\/www.youtube.com\/;\n\t}"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
+
+sudo touch /usr/share/nginx/html/4-not_found_page_404.html
+echo - e "Ceci n'est pas une page\n" | sudo tee /usr/share/nginx/html/4-not_found_page_404.html
+new_string="server_name _;\n\n\terror_page 404 \/4-not_found_page_404.html;\n\tlocation = \/4-not_found_page_404.html {\n\t\troot \/usr\/share\/nginx\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
+
+hostname="[0-9]+-web-[0-9]+"
+ip_address=$(grep -E "$hostname" /etc/hosts | awk '{print $3}')
+new_string="server_name _;\n\n\tadd_header X-Served-By \"$ip_address\";"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
+
+# Restart and reload Nginx to apply changes
 sudo service nginx restart
 sudo service nginx reload
