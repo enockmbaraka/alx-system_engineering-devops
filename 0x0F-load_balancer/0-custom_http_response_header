@@ -1,29 +1,20 @@
 #!/usr/bin/env bash
-# Configure web-02 to be identical to web-01
-# The name of the custom HTTP header must be X-Served-By
-# The value of the custom HTTP header must be the hostname of the server Nginx is running on
+# script that configure nginx http response header
 
-# Update package list and install Nginx
-sudo apt-get update
-sudo apt-get install -y nginx
-
-# Create a custom index page
+sudo apt-get -y install nginx
 echo "Hello World!" | sudo tee /var/www/html/index.html
 
-# Create a custom 404 page
-echo - e "Ceci n'est pas une page\n" | sudo tee /usr/share/nginx/html/404.html
+new_string="server_name _;\n\tlocation \/redirect_me{\n\t\treturn 301 https:\/\/www.youtube.com\/;\n\t}"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-# Get the hostname of the server
-hostname=$(hostname)
+sudo touch /usr/share/nginx/html/4-not_found_page_404.html
+echo -e "Ceci n'est pas une page\n" | sudo tee /usr/share/nginx/html/4-not_found_page_404.html
+new_string="server_name _;\n\n\terror_page 404 \/4-not_found_page_404.html;\n\tlocation = \/4-not_found_page_404.html {\n\t\troot \/usr\/share\/nginx\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-# Variables for new configuration parts
-custom_header="\n\tadd_header X-Served-By $hostname;"
-redirect_location="\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}"
-error_page_config="\n\terror_page 404 /404.html;\n\tlocation = /404.html {\n\t\tinternal;\n\t}"
+hostname="[0-9]+-web-[0-9]+"
+ip_address=$(grep -E "$hostname" /etc/hosts | awk '{print $3}')
+new_string="server_name _;\n\n\tadd_header X-Served-By \"$ip_address\";"
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-# Insert custom configurations into the Nginx default site configuration
-sudo sed -i "/server_name _;/a \\t$custom_header$redirect_location$error_page_config" /etc/nginx/sites-available/default
-
-# Restart and reload Nginx to apply the changes
 sudo service nginx restart
-sudo service nginx reload
