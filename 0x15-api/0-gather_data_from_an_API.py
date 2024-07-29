@@ -1,34 +1,14 @@
 #!/usr/bin/python3
-"""
-Gathering data from an api
-"""
-import csv
+""" return information about his/her TODO list progress"""
 import requests
 import sys
 
 if __name__ == "__main__":
-    user_id = int(sys.argv[1])
+    url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(url + "users/{}".format(sys.argv[1])).json()
+    todos = requests.get(url + "todos", params={"userId": sys.argv[1]}).json()
 
-    file = f"{user_id}.csv"
-
-    r1 = requests.get("https://jsonplaceholder.typicode.com/users")
-
-    users = r1.json()
-
-    r2 = requests.get("https://jsonplaceholder.typicode.com/todos")
-
-    todos = r2.json()
-
-    for user in users:
-        if user.get("id") == user_id:
-            name = user.get("username")
-
-    with open(file, 'a', newline='') as f:
-        header = ["userId", "name", "completed", "title"]
-        writer = csv.DictWriter(f, fieldnames=header, quoting=csv.QUOTE_ALL)
-
-        for todo in todos:
-            if todo.get("userId") == user_id:
-                todo.update({"name": name})
-                del todo["id"]
-                writer.writerow(todo)
+    completed = [t.get("title") for t in todos if t.get("completed") is True]
+    print("Employee {} is done with tasks({}/{}):".format(
+        user.get("name"), len(completed), len(todos)))
+    [print("\t {}".format(c)) for c in completed]
