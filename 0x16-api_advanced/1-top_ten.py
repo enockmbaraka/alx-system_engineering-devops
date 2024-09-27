@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-"""Function to print the top 10 hot posts for a given Reddit subreddit."""
+#!usr/bin/python3
+"""Function to print top 10 posts for Reddit subreddit."""
 
 import requests
 
