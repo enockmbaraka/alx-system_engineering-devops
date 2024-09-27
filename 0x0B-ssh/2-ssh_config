@@ -1,6 +1,6 @@
 #ss config
 Host ubuntu
-	HostName 52.23.178.121
+	HostName 54.236.17.30
 	User ubuntu
 	identityFile ~/.ssh/school
 	PasswordAuthentication no
